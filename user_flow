@@ -1,0 +1,16 @@
+User opens app
+↓
+Session ID generated (stored in URL)
+↓
+User uploads PDF or pastes URL
+↓
+Text extracted (PyPDF / BeautifulSoup)
+↓
+Text sent to Groq AI (Llama 3.3 70B)
+↓
+AI returns structured JSON summary
+↓
+Summary displayed to user
+↓
+Summary saved to Supabase
+(max 3 per session, oldest deleted)
