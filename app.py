@@ -24,12 +24,15 @@ input_method = st.radio("Choose input method",
     horizontal=True)
 
 text = None
+if "judgement_text" not in st.session_state:
+    st.session_state.judgement_text = None
 
 if input_method == "Upload PDF":
     uploaded_file = st.file_uploader("Upload court judgement PDF", type=["pdf"])
     if uploaded_file:
         with st.spinner("Extracting text from PDF..."):
             text = bk.extract_text_from_pdf(uploaded_file)
+            st.session_state.judgement_text = text
         st.success(f"✅ Extracted {len(text)} characters from PDF")
 
 elif input_method == "Paste URL":
@@ -38,6 +41,8 @@ elif input_method == "Paste URL":
     if url:
         with st.spinner("Fetching judgement from URL..."):
             text = bk.extract_text_from_url(url)
+            st.session_state.judgement_text = text
+
         st.success(f"✅ Extracted {len(text)} characters from URL")
 
 if text:
@@ -83,6 +88,32 @@ st.divider()
 st.subheader("📚 Recent Summaries")
 
 recent = db.get_recent_summaries(session_id)
+
+#new---------------
+
+# Follow-up questions section
+if st.session_state.judgement_text:
+    st.divider()
+    st.subheader("🔍 Ask a Specific Question")
+    st.caption("Want to know more? Ask anything about this judgement.")
+    
+    question = st.text_input("Your question", 
+        placeholder="e.g. Explain the punishment in detail")
+    
+    if st.button("Ask", use_container_width=True):
+        if question.strip():
+            with st.spinner("Thinking..."):
+                answer = bk.ask_followup(
+                    st.session_state.judgement_text, 
+                    question
+                )
+            st.markdown("### 💡 Answer")
+            st.write(answer)
+        else:
+            st.warning("Please type a question first!")
+
+
+#---------------new
 
 if not recent:
     st.info("No recent summaries yet. Upload a judgement above!")

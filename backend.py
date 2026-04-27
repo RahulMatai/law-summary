@@ -67,3 +67,26 @@ def summarize_judgement(text):
     clean = response.choices[0].message.content.strip()
     clean = clean.replace("```json", "").replace("```", "")
     return json.loads(clean)
+
+def ask_followup(text, question):
+    client = get_groq_client()
+    prompt = f"""
+    You are a legal expert. A user has read this Indian court judgement 
+    and has a specific question about it.
+    
+    Answer the question in clear, simple language.
+    Be detailed but focused only on what is asked.
+    
+    Judgement text:
+    {text[:8000]}
+    
+    User question:
+    {question}
+    """
+    response = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.3,
+    )
+    
+    return response.choices[0].message.content.strip()
