@@ -1,0 +1,7 @@
+streamlit>=1.32.0
+groq
+pypdf
+supabase
+python-dotenv
+requests
+beautifulsoup4
